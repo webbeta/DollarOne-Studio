@@ -10,6 +10,60 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
         }
     };
 
+
+    function exportSomething(type, data) {
+        var template = $templateCache.get('dollar_one_cpp.html'),
+            filename = 'export';
+
+        if( type === 'figure' )
+            filename = slug(data.title, {lower: true});
+        else if( type === 'group' )
+            filename = slug('grupo '+data.id, {lower: true});
+        else
+            filename = slug(data.title, {lower: true});
+
+        $http({
+            url: '/exports',
+            method: "POST",
+            data: {
+                data: data,
+                type: type,
+                template: template,
+                filename: filename
+            }
+        }).then(function(response) {
+            var csvData = 'data:text/x-c;charset=utf-8,' + encodeURIComponent(response.data);
+            angular.element("#downloadLink").attr({
+                'href': csvData,
+                'download': filename+'.cpp'
+            })[0].click();
+            ngNotify.set('Exportación correcta.');
+        }, function(response) {
+            ngNotify.set('No se ha podido exportar la selección.', {type: 'error'});
+        });
+    }
+
+    function loadBgImage(files, scope) {
+        if( files.length === 0 || !files[0].type.match('image.*') )
+            ngNotify.set('Debes seleccionar una imagen.', {type: 'error'});
+        else {
+            var file = files[0],
+                reader = new FileReader();
+
+            reader.readAsDataURL(file);
+
+            reader.onload = function(evt) {
+                scope.backgroundImage = evt.target.result;
+                $timeout(function() {
+                    scope.backgroundImage = evt.target.result;
+                }, 200);
+            };
+            reader.onerror = function() {
+                ngNotify.set('Debes seleccionar una imagen.', {type: 'error'});
+            };
+        }
+    }
+
     $scope.closeProject = function() {
         $scope.project.loaded = false;
         $scope.project.content = null;
@@ -88,6 +142,17 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
                     $scope.okEnabled = false;
                     $scope.resetEnabled = false;
                 }
+                $scope.backgroundImage = null;
+                $scope.backgroundSize = 'cover';
+                $scope.setBackgroundSizeCover = function() {
+                    $scope.backgroundSize = 'cover';
+                };
+                $scope.setBackgroundSizeContain = function() {
+                    $scope.backgroundSize = 'contain';
+                };
+                $scope.loadBgImage = function(files) {
+                    loadBgImage(files, $scope);
+                };
                 $scope.cancel = function() {
                     $uibModalInstance.dismiss('cancel');
                 };
@@ -154,6 +219,17 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
                     $scope.resetEnabled = false;
                     $scope.titleEnabled = false;
                 }
+                $scope.backgroundImage = null;
+                $scope.backgroundSize = 'cover';
+                $scope.setBackgroundSizeCover = function() {
+                    $scope.backgroundSize = 'cover';
+                };
+                $scope.setBackgroundSizeContain = function() {
+                    $scope.backgroundSize = 'contain';
+                };
+                $scope.loadBgImage = function(files) {
+                    loadBgImage(files, $scope);
+                };
                 $scope.buttonsEnabled = function() {
                     return $scope.okEnabled && $scope.titleEnabled;
                 };
@@ -233,38 +309,6 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
             });
         });
     };
-
-    function exportSomething(type, data) {
-        var template = $templateCache.get('dollar_one_cpp.html'),
-            filename = 'export';
-
-        if( type === 'figure' )
-            filename = slug(data.title, {lower: true});
-        else if( type === 'group' )
-            filename = slug('grupo '+data.id, {lower: true});
-        else
-            filename = slug(data.title, {lower: true});
-
-        $http({
-            url: '/exports',
-            method: "POST",
-            data: {
-                data: data,
-                type: type,
-                template: template,
-                filename: filename
-            }
-        }).then(function(response) {
-            var csvData = 'data:text/x-c;charset=utf-8,' + encodeURIComponent(response.data);
-            angular.element("#downloadLink").attr({
-                'href': csvData,
-                'download': filename+'.cpp'
-            })[0].click();
-            ngNotify.set('Exportación correcta.');
-        }, function(response) {
-            ngNotify.set('No se ha podido exportar la selección.', {type: 'error'});
-        });
-    }
 
     $scope.exportFigure = function(figure) {
         exportSomething('figure', figure);

@@ -215,12 +215,18 @@ path.push_back(Point2D({{ dot.x }}, {{ dot.y }}));
             </div>
         </div>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" style="background-position: center center;background-repeat: no-repeat;" ng-style="backgroundImage !== null && { 'background-image': 'url(' + backgroundImage + ')', 'background-size': backgroundSize }">
         <canvas paper-edit="figure"></canvas>
     </div>
     <div class="modal-footer">
         <div class="pull-left">
             <button class="btn btn-warning" type="button" ng-click="reset()" ng-disabled="!resetEnabled">Resetear</button>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-sm btn-file">Img. de fondo&hellip; <input type="file" single file-input="loadBgImage"></button>
+                <button type="button" class="btn btn-default btn-sm active" ng-class="{ 'active': backgroundSize === 'cover' }" ng-click="backgroundImage === null || setBackgroundSizeCover()" ng-disabled="backgroundImage === null"><span class="glyphicon glyphicon-resize-full"></span></button>
+                <button type="button" class="btn btn-default btn-sm" ng-class="{ 'active': backgroundSize === 'contain' }" ng-click="backgroundImage === null || setBackgroundSizeContain()" ng-disabled="backgroundImage === null"><span class="glyphicon glyphicon-resize-small"></span></button>
+            </div>
         </div>
         <div class="pull-right">
             <button class="btn btn-primary" disabled="disabled" type="button" ng-click="ok()" ng-disabled="!okEnabled">Aceptar</button>
@@ -257,7 +263,7 @@ path.push_back(Point2D({{ dot.x }}, {{ dot.y }}));
                     </div>
                 </form>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12" style="background-position: center center;background-repeat: no-repeat;" ng-style="backgroundImage !== null && { 'background-image': 'url(' + backgroundImage + ')', 'background-size': backgroundSize }">
                 <canvas paper-create></canvas>
             </div>
         </div>
@@ -265,6 +271,12 @@ path.push_back(Point2D({{ dot.x }}, {{ dot.y }}));
     <div class="modal-footer">
         <div class="pull-left">
             <button class="btn btn-warning" type="button" ng-click="reset()" ng-disabled="!resetEnabled">Resetear</button>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-sm btn-file">Img. de fondo&hellip; <input type="file" single file-input="loadBgImage"></button>
+                <button type="button" class="btn btn-default btn-sm active" ng-class="{ 'active': backgroundSize === 'cover' }" ng-click="backgroundImage === null || setBackgroundSizeCover()" ng-disabled="backgroundImage === null"><span class="glyphicon glyphicon-resize-full"></span></button>
+                <button type="button" class="btn btn-default btn-sm" ng-class="{ 'active': backgroundSize === 'contain' }" ng-click="backgroundImage === null || setBackgroundSizeContain()" ng-disabled="backgroundImage === null"><span class="glyphicon glyphicon-resize-small"></span></button>
+            </div>
         </div>
         <div class="pull-right">
             <button class="btn btn-primary" disabled="disabled" type="button" ng-click="ok()" ng-disabled="!buttonsEnabled()">Aceptar</button>
