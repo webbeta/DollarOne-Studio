@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es" ng-app="app">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>DollarOne Studio</title>
+
+    <link rel="stylesheet" type="text/css" href="assets/default.css" />
+    <script type="text/javascript" src="assets/default.js"></script>
+</head>
+
+<body ng-controller="MainCtrl">
+
+<a id="downloadLink" style="display: none;">download</a>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">DollarOne Studio</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">DollarOne Studio</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav" ng-show="!project.loaded">
+                <li>
+                    <p class="navbar-btn">
+                        <span class="btn btn-primary btn-file">
+                            Abrir&hellip; <input type="file" single file-input="loadProject">
+                        </span>
+                    </p>
+                </li>
+                <li>&nbsp;</li>
+                <li>
+                    <p class="navbar-btn">
+                        <span class="btn btn-success" ng-click="newProject()">
+                            Nuevo proyecto&hellip;
+                        </span>
+                    </p>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav ng-hide" ng-show="project.loaded">
+                <li>
+                    <p class="navbar-btn">
+                        <span class="btn btn-danger" ng-click="closeProject()">
+                            Cerrar
+                        </span>
+                    </p>
+                </li>
+                <li>&nbsp;</li>
+                <li>
+                    <p class="navbar-btn">
+                        <span class="btn btn-success" ng-click="!hasFigures() || saveProject()" ng-disabled="!hasFigures()">
+                            Guardar&hellip;
+                        </span>
+                    </p>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav pull-right ng-hide" ng-show="project.loaded">
+                <li>
+                    <p class="navbar-btn">
+                        <span class="btn btn-success" ng-click="newFigure()">
+                            Nueva figura&hellip;
+                        </span>
+                    </p>
+                </li>
+                <li>&nbsp;</li>
+                <li>
+                    <p class="navbar-btn">
+                        <span class="btn btn-primary" ng-click="!hasFigures() || testMultiple('project')" ng-disabled="!hasFigures()">
+                            Probar proyecto&hellip;
+                        </span>
+                    </p>
+                </li>
+                <li>&nbsp;</li>
+                <li>
+                    <p class="navbar-btn">
+                        <span class="btn btn-default" ng-click="!hasFigures() || !hasTitle() || exportProject()" ng-disabled="!hasFigures() || !hasTitle()">
+                            Exportar proyecto&hellip;
+                        </span>
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="starter-template ng-hide" ng-show="project.loaded">
+        <input type="text" class="form-control input-lg" placeholder="Título del proyecto" ng-model="project.content.title">
+
+        <div class="row">
+            <div class="col-md-12">&nbsp;</div>
+        </div>
+
+        <div class="row" ng-repeat="group in project.content.groups">
+
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-7">
+                        <h1 class="unmargin">Grupo #{{ group.id }}</h1>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="pull-right">
+                            <span class="btn btn-success" ng-click="newFigure(group)">
+                                Nueva figura aquí&hellip;
+                            </span>
+                            <span class="btn btn-primary" ng-click="!hasFigures(group) || testMultiple('group', group)" ng-disabled="!hasFigures(group)">
+                                Probar grupo&hellip;
+                            </span>
+                            <span class="btn btn-default" ng-click="!hasFigures(group) || exportGroup(group)" ng-disabled="!hasFigures(group)">
+                                Exportar grupo&hellip;
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">&nbsp;</div>
+
+            <div class="col-md-4" ng-repeat="figure in group.figures">
+                <div class="panel panel-default">
+                    <div class="panel-heading text-center">
+                        <canvas paper-view="figure"></canvas>
+                    </div>
+                    <div class="panel-body">
+                        <input type="text" class="form-control input-md" placeholder="Título de la figura" ng-model="figure.title">
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-3"><button type="button" class="btn btn-link" ng-click="editFigure(figure)">Editar</button></div>
+                            <div class="col-md-3"><button type="button" class="btn btn-link" ng-click="testFigure(figure)">Probar</button></div>
+                            <div class="col-md-3"><button type="button" class="btn btn-link" ng-click="exportFigure(figure)">Exportar</button></div>
+                            <div class="col-md-3"><button type="button" class="btn btn-link" ng-click="deleteFigure(figure)">Borrar</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script type="text/ng-template" id="dollar_one_cpp.html">
+    void fill{{ camelCaseTitle }}( DollarRecognizer::GeometricRecognizer* gr )
+    {
+        DollarRecognizer::Path2D path;
+        {% for dot in dots %}
+path.push_back(Point2D({{ dot.x }}, {{ dot.y }}));
+        {% endfor %}
+
+        gr->addTemplate("{{ slug }}", path);
+    }
+</script>
+
+<script type="text/ng-template" id="test_figure.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Probar `{{ figure.title }}`</h3>
+    </div>
+    <div class="modal-body">
+        <canvas paper-draw="figure"></canvas>
+    </div>
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="ng-hide" ng-show="showScore">
+                    <input class="form-control input-sm" type="text" placeholder="puntuación" readonly value="{{ recognitionScore }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="test_multiple.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Probar {{ title }}</h3>
+    </div>
+    <div class="modal-body">
+        <canvas paper-multiple-draw="figures"></canvas>
+    </div>
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="input-group ng-hide" ng-show="showScore">
+                    <span class="input-group-addon">{{ recognitionTitle }}</span>
+                    <input class="form-control input-sm" type="text" placeholder="puntuación" readonly value="{{ recognitionScore }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="edit_figure.html">
+    <div class="modal-header">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="modal-title">Editar `{{ figure.title }}`</h3>
+            </div>
+        </div>
+    </div>
+    <div class="modal-body">
+        <canvas paper-edit="figure"></canvas>
+    </div>
+    <div class="modal-footer">
+        <div class="pull-left">
+            <button class="btn btn-warning" type="button" ng-click="reset()" ng-disabled="!resetEnabled">Resetear</button>
+        </div>
+        <div class="pull-right">
+            <button class="btn btn-primary" disabled="disabled" type="button" ng-click="ok()" ng-disabled="!okEnabled">Aceptar</button>
+            <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="new_figure.html">
+    <div class="modal-header">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="modal-title">Nueva figura {{ title }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form class="form-horizontal">
+                    <div class="form-group form-group">
+                        <label class="col-md-2 control-label" for="figureTitle">Título</label>
+                        <div class="col-md-10">
+                            <input class="form-control" type="text" id="figureTitle" placeholder="título" ng-model="title" ng-change="titleChange()">
+                        </div>
+                    </div>
+                    <div class="form-group form-group" ng-show="selectedGroup === null">
+                        <label class="col-md-2 control-label" for="figureGroup">Grupo</label>
+                        <div class="col-md-10">
+                            <select class="form-control input" id="figureGroup" ng-model="group.model" required>
+                                <option ng-repeat="option in group.availableOptions" value="{{ option.id }}" ng-selected="option.id === 0">{{ option.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-12">
+                <canvas paper-create></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="pull-left">
+            <button class="btn btn-warning" type="button" ng-click="reset()" ng-disabled="!resetEnabled">Resetear</button>
+        </div>
+        <div class="pull-right">
+            <button class="btn btn-primary" disabled="disabled" type="button" ng-click="ok()" ng-disabled="!buttonsEnabled()">Aceptar</button>
+            <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="confirmation.html">
+    <div class="modal-header">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="modal-title">{{ title }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="modal-body">
+        {{ description }}
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+
+</body>
+</html>

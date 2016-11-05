@@ -1,0 +1,8 @@
+node_modules/
+bower_components/
+docs/
+app/
+src/**/vendor/
+config.json
+./config.json
+/.idea

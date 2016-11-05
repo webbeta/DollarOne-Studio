@@ -1,0 +1,14 @@
+{
+  "debug": true,
+  "serverPort": "8899",
+  "deploy": {
+    "dev": {
+      "app_dir": "./app",
+      "assets_dir": "./app/assets"
+    },
+    "prod": {
+      "app_dir": "./prod_app",
+      "assets_dir": "./prod_app/assets"
+    }
+  }
+}
