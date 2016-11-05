@@ -9,7 +9,7 @@ The goals of this project are:
 
 **Advise:** that's an internal tool we use as a supporting feature for some of our projects, so the code was writen fast and it's not clean/optimized at all... so don't hold it against us :)
 
-<img src="https://github.com/webetes/DollarOne-Studio/blob/master/art/screenshot.png?raw=true" width="800px" />
+<img src="https://github.com/webetes/DollarOne-Studio/blob/master/art/screenshot.png?raw=true" />
 
 ---
 
