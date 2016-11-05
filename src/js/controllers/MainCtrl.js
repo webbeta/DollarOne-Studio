@@ -126,6 +126,11 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
         $uibModal.open({
             templateUrl: 'new_figure.html',
             controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
+                if( group === null )
+                    $scope.modalTitle = 'en el proyecto';
+                else
+                    $scope.modalTitle = 'en el grupo #'+group.id;
+
                 var groups = [],
                     lastId = 0;
                 angular.forEach(mainScope.project.content.groups, function(group) {
