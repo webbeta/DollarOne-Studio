@@ -51,10 +51,12 @@ app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', fun
                     }
                 }
 
-                angular.element(canvas).mousedown(function(event) {
+                function mousedown(event) {
+                    event.preventDefault();
+                    var point = paperUtils.getMouseOrTouchPoint(event);
                     if( !drawPath ) drawPath = new drawer.Path();
-                    drawPath.add(new paper.Point(event.offsetX, event.offsetY));
-                    dollarOneDrawPath.push(new Point(event.offsetX, event.offsetY));
+                    drawPath.add(new paper.Point(point.offsetX, point.offsetY));
+                    dollarOneDrawPath.push(new Point(point.offsetX, point.offsetY));
                     drawPath.strokeColor = 'green';
                     drawPath.strokeWidth = 2;
                     scope.recognitionScore = 0;
@@ -63,16 +65,19 @@ app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', fun
                         scope.showScore = false;
                         scope.$apply();
                     }, 200);
-                });
+                }
 
-                angular.element(canvas).mousemove(function(event) {
+                function mousemove(event) {
+                    event.preventDefault();
                     if( !drawPath || blockDraw ) return;
-                    drawPath.add(new paper.Point(event.offsetX, event.offsetY));
-                    dollarOneDrawPath.push(new Point(event.offsetX, event.offsetY));
+                    var point = paperUtils.getMouseOrTouchPoint(event);
+                    drawPath.add(new paper.Point(point.offsetX, point.offsetY));
+                    dollarOneDrawPath.push(new Point(point.offsetX, point.offsetY));
                     scope.showScore = false;
-                });
+                }
 
-                angular.element(canvas).mouseup(function(event) {
+                function mouseup(event) {
+                    event.preventDefault();
                     blockDraw = true;
                     try {
                         var recognition = recognizer.Recognize(dollarOneDrawPath),
@@ -96,7 +101,16 @@ app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', fun
                         drawPath = null;
                         blockDraw = false;
                     }, 500);
-                });
+                }
+
+                angular.element(canvas).mousedown(mousedown);
+                angular.element(canvas).on('touchstart', mousedown);
+
+                angular.element(canvas).mousemove(mousemove);
+                angular.element(canvas).on('touchmove', mousemove);
+
+                angular.element(canvas).mouseup(mouseup);
+                angular.element(canvas).on('touchend', mouseup);
             });
         }
     };

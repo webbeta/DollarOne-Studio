@@ -27,10 +27,6 @@ app.directive('paperView', ['figureUtils', 'paperUtils', function(figureUtils, p
 
             paperUtils.drawStartAndEnd(drawer, dots);
 
-            // var size = new paper.Size(dimens.width, dimens.height);
-            //
-            // view.setViewSize(size);
-
             view.draw();
         }
     };

@@ -23,15 +23,21 @@ app.factory('paperUtils', [function() {
         };
     }
 
-    function paperMapToDollarOneMap(dots) {
-        var $1Array = [];
-        angular.forEach(dots, function(dot) {
-            $1Array.push(new Point(dot.x, dot.y));
-        });
-        return $1Array;
+    function getMouseOrTouchPoint(event) {
+        var isTouch = event.type === 'touchstart' || event.type === 'touchmove' || event.type === 'touchend';
+        if( isTouch ) {
+            var touch = event.touches[0],
+                targetOffset = angular.element(touch.target).offset();
+            return {
+                offsetX: touch.pageX - targetOffset.left,
+                offsetY: touch.pageY - targetOffset.top
+            };
+        }else
+            return event;
     }
 
     return {
-        drawStartAndEnd: drawStartAndEnd
+        drawStartAndEnd: drawStartAndEnd,
+        getMouseOrTouchPoint: getMouseOrTouchPoint
     };
 }]);

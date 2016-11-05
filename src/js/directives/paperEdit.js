@@ -36,30 +36,44 @@ app.directive('paperEdit', ['figureUtils', 'paperUtils', '$timeout', function(fi
 
                 view.draw();
 
-                angular.element(canvas).mousedown(function(event) {
+                function mousedown(event) {
+                    event.preventDefault();
+                    var point = paperUtils.getMouseOrTouchPoint(event);
                     if( !scope.drawPath ) {
                         scope.drawPath = new drawer.Path();
                         scope.rawPath = [];
                     }
                     if( scope.blockDraw ) return;
-                    scope.rawPath.push({ x: event.offsetX, y: event.offsetY });
-                    scope.drawPath.add(new paper.Point(event.offsetX, event.offsetY));
+                    scope.rawPath.push({ x: point.offsetX, y: point.offsetY });
+                    scope.drawPath.add(new paper.Point(point.offsetX, point.offsetY));
                     scope.drawPath.strokeColor = 'green';
                     scope.drawPath.strokeWidth = 2;
-                });
+                }
 
-                angular.element(canvas).mousemove(function(event) {
+                function mousemove(event) {
+                    event.preventDefault();
                     if( !scope.drawPath || scope.blockDraw ) return;
-                    scope.drawPath.add(new paper.Point(event.offsetX, event.offsetY));
-                    scope.rawPath.push({ x: event.offsetX, y: event.offsetY });
-                });
+                    var point = paperUtils.getMouseOrTouchPoint(event);
+                    scope.drawPath.add(new paper.Point(point.offsetX, point.offsetY));
+                    scope.rawPath.push({ x: point.offsetX, y: point.offsetY });
+                }
 
-                angular.element(canvas).mouseup(function(event) {
+                function mouseup(event) {
+                    event.preventDefault();
                     scope.blockDraw = true;
                     scope.resetEnabled = true;
                     scope.okEnabled = true;
                     scope.$apply();
-                });
+                }
+
+                angular.element(canvas).mousedown(mousedown);
+                angular.element(canvas).on('touchstart', mousedown);
+
+                angular.element(canvas).mousemove(mousemove);
+                angular.element(canvas).on('touchmove', mousemove);
+
+                angular.element(canvas).mouseup(mouseup);
+                angular.element(canvas).on('touchend', mouseup);
             });
         }
     };
