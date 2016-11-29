@@ -33,3 +33,33 @@ body {
 .unmargin {
   margin: 0;
 }
+
+@media all and (max-width: 480px) {
+  .btn-block-xs-only {
+    display:block;
+    width: 98%;
+    margin: 0 auto;
+  }
+}
+
+.navbar-nav {
+  &:last-of-type {
+    margin-left: 40px;
+  }
+  .divider-vertical {
+    width: 3px;
+    height: 100%;
+    display: block;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .navbar-nav {
+    &:last-of-type {
+      margin-left: inherit!important;
+    }
+    .divider-vertical {
+      display: none;
+    }
+  }
+}
