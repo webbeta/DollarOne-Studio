@@ -26,7 +26,7 @@
   "dependencies": {
     "angular": "1.4.5",
     "angular-resource": "1.4.5",
-    "angular-bootstrap": "~2.2.0",
+    "angular-bootstrap": "~2.3.0",
     "bootstrap-sass": "3.3.*",
     "ng-notify": "~0.8.0",
     "dollar-one": "https://depts.washington.edu/aimgroup/proj/dollar/dollar.js",

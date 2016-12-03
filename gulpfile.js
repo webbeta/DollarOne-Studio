@@ -7,9 +7,8 @@ var config = require('./config'),
     addsrc = require('gulp-add-src'),
     clean = require('gulp-clean'),
     gulpif = require('gulp-if'),
-    plumber = require('gulp-plumber'),
     autoprefixer = require('gulp-autoprefixer'),
-    minifyCss = require('gulp-minify-css'),
+    cleanCSS = require('gulp-clean-css'),
     server = require('gulp-express');
 
 var js = [
@@ -57,7 +56,7 @@ gulp.task('css', function() {
         .pipe(addsrc.append('./src/css/module/**/*.css'))
         .pipe(autoprefixer())
         .pipe(concat('default.css'))
-        .pipe(gulpif(!config.debug, minifyCss({compatibility: 'ie10'})))
+        .pipe(gulpif(!config.debug, cleanCSS({compatibility: 'ie10'})))
         .pipe(gulp.dest(assetsDir));
 });
 

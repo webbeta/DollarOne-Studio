@@ -10,7 +10,6 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
         }
     };
 
-
     function exportSomething(type, data) {
         var template = $templateCache.get('dollar_one_cpp.html'),
             filename = 'export';
@@ -144,11 +143,15 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
                 }
                 $scope.backgroundImage = null;
                 $scope.backgroundSize = 'cover';
+                $scope.backgroundColor = 'white';
                 $scope.setBackgroundSizeCover = function() {
                     $scope.backgroundSize = 'cover';
                 };
                 $scope.setBackgroundSizeContain = function() {
                     $scope.backgroundSize = 'contain';
+                };
+                $scope.setBackgroundColor = function(color) {
+                    $scope.backgroundColor = color;
                 };
                 $scope.loadBgImage = function(files) {
                     loadBgImage(files, $scope);
@@ -221,11 +224,15 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
                 }
                 $scope.backgroundImage = null;
                 $scope.backgroundSize = 'cover';
+                $scope.backgroundColor = 'white';
                 $scope.setBackgroundSizeCover = function() {
                     $scope.backgroundSize = 'cover';
                 };
                 $scope.setBackgroundSizeContain = function() {
                     $scope.backgroundSize = 'contain';
+                };
+                $scope.setBackgroundColor = function(color) {
+                    $scope.backgroundColor = color;
                 };
                 $scope.loadBgImage = function(files) {
                     loadBgImage(files, $scope);

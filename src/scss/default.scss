@@ -63,3 +63,22 @@ body {
     }
   }
 }
+
+.color-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1px solid gray;
+  &.white {
+    background-color: white;
+  }
+  &.red {
+    background-color: red;
+  }
+  &.green {
+    background-color: green;
+  }
+  &.yellow {
+    background-color: yellow;
+  }
+}
