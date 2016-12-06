@@ -18,7 +18,7 @@ The goals of this project are:
 We've used following libraries to make this project:
 
 * Everybody knows: [Gulp](http://gulpjs.com/), [Bower](https://bower.io/), [Express](http://expressjs.com/), [AngularJS](https://angularjs.org/), [UI Bootstrap](https://angular-ui.github.io/bootstrap/), [Bootstrap SASS](http://getbootstrap.com/css/#sass). 
-* $1 Unistroke Recognizer: http://depts.washington.edu/aimgroup/proj/dollar/index.html
+* $1 Unistroke Recognizer: http://depts.washington.edu/aimgroup/proj/dollar/index.html (currently using a modified version)
 * ng-notify: https://github.com/matowens/ng-notify
 * Paper.js: http://paperjs.org/
 * slug: https://github.com/dodo/node-slug
