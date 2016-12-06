@@ -29,7 +29,6 @@
     "angular-bootstrap": "~2.3.0",
     "bootstrap-sass": "3.3.*",
     "ng-notify": "~0.8.0",
-    "dollar-one": "https://depts.washington.edu/aimgroup/proj/dollar/dollar.js",
     "paper": "^0.10.2",
     "slug": "^0.9.1"
   },
