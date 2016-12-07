@@ -54,6 +54,10 @@ app.post('/exports', function(request, response) {
         data = data.figures;
 
     data.forEach(function(figure) {
+        figure.dots.forEach(function(dot) {
+            dot.x = parseInt(dot.x);
+            dot.y = parseInt(dot.y);
+        });
         finalResult += twigTpl.render({
             camelCaseTitle: slug(figure.title, ' ').toUpperCamelCase(),
             slug: slug(figure.title, {lower: true}),
