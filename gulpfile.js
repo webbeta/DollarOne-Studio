@@ -9,6 +9,9 @@ var config = require('./config'),
     gulpif = require('gulp-if'),
     autoprefixer = require('gulp-autoprefixer'),
     cleanCSS = require('gulp-clean-css'),
+    watch = require('gulp-watch'),
+
+    jasmineBrowser = require('gulp-jasmine-browser'),
     server = require('gulp-express');
 
 var js = [
@@ -36,6 +39,14 @@ gulp.task('server', ['watch'], function() {
         server.stop();
         server.run(['server/app.js']);
     });
+});
+
+gulp.task('jasmine', function() {
+    var filesForTest = js.concat(['src/js/vendor/angular-mocks/*.js', 'spec/mocks/**/*.mock.js', 'spec/**/*.spec.js']);
+    return gulp.src(filesForTest)
+        .pipe(watch(filesForTest))
+        .pipe(jasmineBrowser.specRunner())
+        .pipe(jasmineBrowser.server({port: 8888}));
 });
 
 gulp.task('bower', function() {
