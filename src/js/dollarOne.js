@@ -112,7 +112,7 @@ var SquareSize = 250.0;
 var Origin = new Point(0, 0);
 var Diagonal = Math.sqrt(SquareSize * SquareSize + SquareSize * SquareSize);
 var HalfDiagonal = 0.5 * Diagonal;
-var AngleRange = Deg2Rad(15.0);
+var AngleRange = Deg2Rad(0.0);
 var AnglePrecision = Deg2Rad(2.0);
 var Phi = 0.5 * (-1.0 + Math.sqrt(5.0)); // Golden Ratio
 //
