@@ -1,4 +1,5 @@
-var express = require('express'),
+var fs = require('fs'),
+    express = require('express'),
     app = express(),
     path = require('path'),
     Twig = require('twig'),
@@ -38,19 +39,31 @@ app.post('/exports', function(request, response) {
         template = request.body.template || null,
         data = request.body.data || null;
 
-    if( type === null || template === null || data === null ) {
+    if( type === null || ( type !== 'project_save' && template === null ) || data === null ) {
         response.status(400)
             .end(null, 'utf8');
     }
 
     var twigTpl = twig({ data: template }),
-        finalResult = '';
+        finalResult = '',
+        tmpRelativePath = 'tmp/' + (+ new Date()),
+        tmpAbsPath = __dirname + '/../' + tmpRelativePath;
 
-    if( type === 'figure' )
+    if ( !fs.existsSync( __dirname + '/../tmp' ) )
+        fs.mkdirSync(__dirname + '/../tmp');
+
+    if( type === 'project_save' ) {
+        finalResult = data;
+
+        fs.writeFile(tmpAbsPath, finalResult);
+
+        response.end(JSON.stringify({ filename: tmpRelativePath }));
+        return;
+    }else if( type === 'figure' )
         data = [data];
     else if( type === 'group' )
         data = data.figures;
-    else
+    else if( type === 'project' )
         data = data.figures;
 
     data.forEach(function(figure) {
@@ -65,13 +78,16 @@ app.post('/exports', function(request, response) {
         });
     });
 
-    response.writeHead(200, {
-        'Content-Type': 'text/x-c',
-        'Access-Control-Allow-Origin': '*',
-        'Content-Disposition': 'attachment; filename='+filename+'.cpp'
-    });
+    fs.writeFile(tmpAbsPath, finalResult);
 
-    response.end(finalResult, 'utf8');
+    response.end(JSON.stringify({ filename: tmpRelativePath }));
+});
+
+app.get('/download', function(request, response) {
+    var tmp = request.query.tmp || null,
+        filename = request.query.filename || 'export';
+
+    response.download(tmp, filename);
 });
 
 var server = app.listen(app.get('port'), function() {

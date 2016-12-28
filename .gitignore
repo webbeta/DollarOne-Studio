@@ -6,3 +6,4 @@ src/**/vendor/
 config.json
 ./config.json
 /.idea
+/tmp

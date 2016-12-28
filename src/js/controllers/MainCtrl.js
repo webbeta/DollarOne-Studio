@@ -15,11 +15,15 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
             filename = 'export';
 
         if( type === 'figure' )
-            filename = slug(data.title, {lower: true});
+            filename = slug(data.title, {lower: true}) + '.cpp';
         else if( type === 'group' )
-            filename = slug('grupo '+data.id, {lower: true});
-        else
-            filename = slug(data.title, {lower: true});
+            filename = slug('grupo '+data.id, {lower: true}) + '.cpp';
+        else if( type === 'project' )
+            filename = slug(data.title, {lower: true}) + '.cpp';
+        else if( type === 'project_save' ) {
+            filename = $scope.project.content.title + '.json';
+            template = null;
+        }
 
         $http({
             url: '/exports',
@@ -31,11 +35,12 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
                 filename: filename
             }
         }).then(function(response) {
-            var csvData = 'data:text/x-c;charset=utf-8,' + encodeURIComponent(response.data);
-            angular.element("#downloadLink").attr({
-                'href': csvData,
-                'download': filename+'.cpp'
-            })[0].click();
+            var popup = window.open('/download?tmp=' + encodeURI(response.data.filename) + '&filename=' + encodeURI(filename), '_blank', 'width=1,height=1,alwaysLowered,z-lock,scrollbars=no', true);
+            $timeout(function() {
+                window.focus();
+                popup.blur();
+                popup.close();
+            }, 30000);
             ngNotify.set('Exportación correcta.');
         }, function(response) {
             ngNotify.set('No se ha podido exportar la selección.', {type: 'error'});
@@ -330,12 +335,7 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
     };
 
     $scope.saveProject = function() {
-        var json = projectUtils.saveProject($scope.project.content),
-            projectUrl = 'data:text/x-c;charset=utf-8,' + encodeURIComponent(json);
-        angular.element("#downloadLink").attr({
-            'href': projectUrl,
-            'download': slug($scope.project.content.title, {lower: true})+'.json'
-        })[0].click();
+        exportSomething('project_save', projectUtils.saveProject($scope.project.content));
     };
 
 }]);
