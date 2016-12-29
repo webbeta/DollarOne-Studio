@@ -33,6 +33,14 @@ app.get('/', function(request, response) {
     response.sendfile(path.join(__dirname, '../app/app.html'));
 });
 
+app.get('/iosadvise', function(request, response) {
+    response.end(
+        '<p style="display:inline-block;font-size:2.5em;font-weight:bold;padding:20% 40px;text-align:center;">' +
+        'Cuando se cargue el c&oacute;digo pulsa en el icono de exportar del navegador <img src="assets/img/ios_export.png">.' +
+        '</p>',
+    'utf8');
+});
+
 app.post('/exports', function(request, response) {
     var type = request.body.type || null,
         filename = request.body.filename || 'export',

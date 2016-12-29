@@ -11,8 +11,13 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
     };
 
     function exportSomething(type, data) {
-        var template = $templateCache.get('dollar_one_cpp.html'),
+        var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream,
+            popup = null,
+            template = $templateCache.get('dollar_one_cpp.html'),
             filename = 'export';
+
+        if( iOS )
+            popup = window.open('/iosadvise', '_blank', null, true);
 
         if( type === 'figure' )
             filename = slug(data.title, {lower: true}) + '.cpp';
@@ -35,12 +40,16 @@ function($scope, ngNotify, projectUtils, $uibModal, deleteModal, $templateCache,
                 filename: filename
             }
         }).then(function(response) {
-            var popup = window.open('/download?tmp=' + encodeURI(response.data.filename) + '&filename=' + encodeURI(filename), '_blank', 'width=1,height=1,alwaysLowered,z-lock,scrollbars=no', true);
-            $timeout(function() {
-                window.focus();
-                popup.blur();
-                popup.close();
-            }, 30000);
+            if( !iOS ) {
+                angular.element("#downloadFrame").attr({
+                    'src': '/download?tmp=' + encodeURI(response.data.filename) + '&filename=' + encodeURI(filename)
+                });
+            }else {
+                $timeout(function() {
+                    popup.location.href = '/download?tmp=' + encodeURI(response.data.filename) + '&filename=' + encodeURI(filename);
+                }, 3500);
+            }
+
             ngNotify.set('Exportación correcta.');
         }, function(response) {
             ngNotify.set('No se ha podido exportar la selección.', {type: 'error'});
