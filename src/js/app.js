@@ -3,6 +3,6 @@ var app = angular.module('app', [
     'ngNotify'
 ])
 .config([function() {
-    //window.engine = 'original';
-    window.engine = 'shape-detector';
+    window.engine = 'original';
+    //window.engine = 'shape-detector';
 }]);
