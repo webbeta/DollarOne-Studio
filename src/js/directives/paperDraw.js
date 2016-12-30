@@ -1,16 +1,13 @@
-app.directive('paperDraw', ['figureUtils', 'paperUtils', '$timeout', function(figureUtils, paperUtils, $timeout) {
+app.directive('paperDraw', ['figureUtils', 'paperUtils', '$timeout', 'recognizerEngine', function(figureUtils, paperUtils, $timeout, recognizerEngine) {
     return {
         restrict: 'A',
         link: function(scope, elements, attributes) {
             var figure = scope[attributes.paperDraw],
                 drawer = new paper.PaperScope(),
                 canvas = elements[0],
-                dots = figure.dots || [],
-                recognizer = new DollarRecognizer();
+                dots = figure.dots || [];
 
-            recognizer.DeleteUserGestures();
-            recognizer.Unistrokes.length = 0;
-            recognizer.AddGesture(slug(figure.title, {lower: true}), figureUtils.mapArrayToDollarOneArray(dots));
+            recognizerEngine.loadShapes([{ title: figure.title, dots: dots }]);
 
             angular.element(document).ready(function() {
                 var holder = angular.element(canvas).parent();
@@ -28,7 +25,7 @@ app.directive('paperDraw', ['figureUtils', 'paperUtils', '$timeout', function(fi
                 path.strokeWidth = 1;
 
                 var drawPath = null,
-                    dollarOneDrawPath = [],
+                    rawDrawPath = [],
                     blockDraw = false,
                     dimens = figureUtils.resetMapToCenter(dots, holder.width(), 400);
 
@@ -45,7 +42,7 @@ app.directive('paperDraw', ['figureUtils', 'paperUtils', '$timeout', function(fi
                     var point = paperUtils.getMouseOrTouchPoint(event);
                     if( !drawPath ) drawPath = new drawer.Path();
                     drawPath.add(new paper.Point(point.offsetX, point.offsetY));
-                    dollarOneDrawPath.push(new Point(point.offsetX, point.offsetY));
+                    rawDrawPath.push({ x: point.offsetX, y: point.offsetY });
                     drawPath.strokeColor = 'green';
                     drawPath.strokeWidth = 2;
                     scope.recognitionScore = 0;
@@ -58,7 +55,7 @@ app.directive('paperDraw', ['figureUtils', 'paperUtils', '$timeout', function(fi
                     if( !drawPath || blockDraw ) return;
                     var point = paperUtils.getMouseOrTouchPoint(event);
                     drawPath.add(new paper.Point(point.offsetX, point.offsetY));
-                    dollarOneDrawPath.push(new Point(point.offsetX, point.offsetY));
+                    rawDrawPath.push({ x: point.offsetX, y: point.offsetY });
                     scope.showScore = false;
                 }
 
@@ -66,11 +63,11 @@ app.directive('paperDraw', ['figureUtils', 'paperUtils', '$timeout', function(fi
                     event.preventDefault();
                     blockDraw = true;
                     try {
-                        var recognition = recognizer.Recognize(dollarOneDrawPath);
+                        var recognition = recognizerEngine.recognize(rawDrawPath);
                         scope.showScore = true;
-                        scope.recognitionScore = recognition.Score;
+                        scope.recognitionScore = recognition.score;
                     }catch(ex) {}
-                    dollarOneDrawPath = [];
+                    rawDrawPath = [];
                     $timeout(function() {
                         drawPath.remove();
                         drawPath = null;

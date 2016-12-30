@@ -19,6 +19,7 @@ var js = [
     'src/js/vendor/angular/angular.js',
     'src/js/vendor/angular-bootstrap/ui-bootstrap-tpls.js',
     'src/js/vendor/bootstrap-sass/**/*.js',
+    'src/js/vendor/shape-detector/index.js',
     'src/js/dollarOne.js',
     'src/js/vendor/paper/**/*.js',
     'src/js/vendor/ng-notify/**/*.js',

@@ -30,7 +30,8 @@
     "bootstrap-sass": "3.3.*",
     "ng-notify": "~0.8.0",
     "paper": "^0.10.2",
-    "slug": "^0.9.1"
+    "slug": "^0.9.1",
+    "shape-detector": "^0.2.1"
   },
   "install": {
     "path": {

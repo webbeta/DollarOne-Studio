@@ -1,20 +1,17 @@
-app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', function(figureUtils, paperUtils, $timeout) {
+app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', 'recognizerEngine', function(figureUtils, paperUtils, $timeout, recognizerEngine) {
     return {
         restrict: 'A',
         link: function(scope, elements, attributes) {
             var figures = scope[attributes.paperMultipleDraw],
                 drawer = new paper.PaperScope(),
                 canvas = elements[0],
-                recognizer = new DollarRecognizer(),
                 structArr = [];
 
-            recognizer.DeleteUserGestures();
-            recognizer.Unistrokes.length = 0;
+            recognizerEngine.loadShapes(figures);
 
             angular.forEach(figures, function(figure) {
                 var slugStr = slug(figure.title, {lower: true});
                 structArr[slugStr] = { title: figure.title, dots: figure.dots };
-                recognizer.AddGesture(slugStr, figureUtils.mapArrayToDollarOneArray(figure.dots));
             });
 
             angular.element(document).ready(function() {
@@ -34,7 +31,7 @@ app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', fun
                 path.strokeWidth = 1;
 
                 var drawPath = null,
-                    dollarOneDrawPath = [],
+                    rawDrawPath = [],
                     blockDraw = false;
 
                 view.draw();
@@ -56,7 +53,7 @@ app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', fun
                     var point = paperUtils.getMouseOrTouchPoint(event);
                     if( !drawPath ) drawPath = new drawer.Path();
                     drawPath.add(new paper.Point(point.offsetX, point.offsetY));
-                    dollarOneDrawPath.push(new Point(point.offsetX, point.offsetY));
+                    rawDrawPath.push({ x: point.offsetX, y: point.offsetY });
                     drawPath.strokeColor = 'green';
                     drawPath.strokeWidth = 2;
                     scope.recognitionScore = 0;
@@ -72,7 +69,7 @@ app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', fun
                     if( !drawPath || blockDraw ) return;
                     var point = paperUtils.getMouseOrTouchPoint(event);
                     drawPath.add(new paper.Point(point.offsetX, point.offsetY));
-                    dollarOneDrawPath.push(new Point(point.offsetX, point.offsetY));
+                    rawDrawPath.push({ x: point.offsetX, y: point.offsetY });
                     scope.showScore = false;
                 }
 
@@ -80,13 +77,13 @@ app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', fun
                     event.preventDefault();
                     blockDraw = true;
                     try {
-                        var recognition = recognizer.Recognize(dollarOneDrawPath),
-                            recognitionStruct = structArr[recognition.Name],
+                        var recognition = recognizerEngine.recognize(rawDrawPath),
+                            recognitionStruct = structArr[recognition.pattern],
                             title = recognitionStruct.title,
                             dots = recognitionStruct.dots;
 
                         scope.showScore = true;
-                        scope.recognitionScore = recognition.Score;
+                        scope.recognitionScore = recognition.score;
                         scope.recognitionTitle = title;
 
                         figureUtils.resetMapToCenter(dots, holder.width(), 400);
@@ -95,7 +92,7 @@ app.directive('paperMultipleDraw', ['figureUtils', 'paperUtils', '$timeout', fun
                         });
                         waterCircles = paperUtils.drawStartAndEnd(drawer, dots, '#c3ff88', '#ffa3a3');
                     }catch(ex) {}
-                    dollarOneDrawPath = [];
+                    rawDrawPath = [];
                     $timeout(function() {
                         drawPath.remove();
                         drawPath = null;
