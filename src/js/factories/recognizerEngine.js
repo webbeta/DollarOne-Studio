@@ -7,16 +7,15 @@ app.factory('recognizerEngine', ['figureUtils', function(figureUtils) {
         recognizer = new DollarRecognizer();
         recognizer.DeleteUserGestures();
         recognizer.Unistrokes.length = 0;
-    }else if( shapeDetectorEngine ) {
+    }else if( shapeDetectorEngine )
         recognizer = new ShapeDetector([]);
-    }
 
     function loadShapes(figures) {
         angular.forEach(figures, function(figure) {
             var slugStr = slug(figure.title, {lower: true});
             if( originalEngine )
                 recognizer.AddGesture(slugStr, figureUtils.mapArrayToDollarOneArray(figure.dots));
-            else
+            else if( shapeDetectorEngine )
                 recognizer.learn(slugStr, figure.dots);
         });
     }
@@ -24,16 +23,15 @@ app.factory('recognizerEngine', ['figureUtils', function(figureUtils) {
     function recognize(dots) {
         var recognition = null;
 
-        if (originalEngine) {
+        if( originalEngine ) {
             recognition = recognizer.Recognize(figureUtils.mapArrayToDollarOneArray(dots));
 
             return {
                 pattern: recognition.Name,
                 score: recognition.Score
             };
-        }else if( shapeDetectorEngine ) {
+        }else if( shapeDetectorEngine )
             return recognizer.spot(dots);
-        }
     }
 
     return {

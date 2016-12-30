@@ -4,5 +4,5 @@ var app = angular.module('app', [
 ])
 .config([function() {
     //window.engine = 'original';
-    window.engine = 'shape-detector'
+    window.engine = 'shape-detector';
 }]);
